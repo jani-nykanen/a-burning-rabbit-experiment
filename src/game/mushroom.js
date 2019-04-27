@@ -3,6 +3,8 @@
 
 
 const MUSHROOM_JUMP_WAIT = 30;
+const MUSHROOM_BOUNCE_WAIT = 30;
+const MUSHROOM_DEATH_TIME = 20;
 
 
 // Constructor
@@ -17,6 +19,13 @@ let Mushroom = function() {
     this.id = 0;
 
     this.gravity = 0.0;
+
+    // Bounce timer
+    this.bounceTimer = 0;
+
+    // Dying
+    this.dying = false;
+    this.deathTimer = 0;
 }
 
 
@@ -27,6 +36,8 @@ Mushroom.prototype.createSelf = function(x, y, id) {
     this.pos = new Vec2(x, y);
     this.startPos = this.pos.copy();
     this.id = id;
+    this.dying = false;
+    this.deathTimer = 0;
 
     this.spr = new AnimatedSprite(24, 24);
     if(id == 2)
@@ -107,9 +118,27 @@ Mushroom.prototype.update = function(globalSpeed, evMan, tm) {
 
     if(!this.exist) return;
 
+    // Die
+    if(this.dying) {
+
+        this.pos.x -= globalSpeed * tm;
+        if((this.deathTimer -= 1.0 * tm) <= 0){
+
+            this.exist = false;
+            this.dying = false;
+        }
+
+        return;
+    }
+
     // Animate
     this.animate(tm);
 
+    // Update bounce timer
+    if(this.bounceTimer > 0.0) {
+
+        this.bounceTimer -= 1.0 * tm;
+    }
 
     // Special behavior
     if(this.id == 8) {
@@ -159,6 +188,11 @@ Mushroom.prototype.drawShadow = function(g) {
         return;
 
     let scale = 1.0 + (this.pos.y- (this.startPos.y)) / (64);
+    if(this.dying) {
+
+        let t = this.deathTimer/MUSHROOM_DEATH_TIME;
+        scale *= t;
+    }
 
     g.drawScaledBitmapRegion(g.bitmaps.mushrooms, 0, 24, 24, 24,
         Math.floor(this.pos.x)-this.spr.width/2*scale, 
@@ -172,17 +206,33 @@ Mushroom.prototype.draw = function(g) {
 
     if(!this.exist) return;
 
+    let sx = 1;
+    let sy = 1;
+    if(this.dying) {
+
+        let t = this.deathTimer/MUSHROOM_DEATH_TIME;
+        sx = t;
+        sy = t;
+    }
+    else if(this.bounceTimer > 0) {
+
+        let t = this.bounceTimer/MUSHROOM_BOUNCE_WAIT;
+        sx = 1+t*0.25;
+        sy = 1-t*0.25;
+    }
+
     // Draw sprite
-    this.spr.draw(g, g.bitmaps.mushrooms, 
-        Math.floor(this.pos.x)-this.spr.width/2, 
-        this.pos.y-this.spr.height);
+    this.spr.drawScaled(g, g.bitmaps.mushrooms, 
+        Math.floor(this.pos.x)-this.spr.width/2*sx, 
+        this.pos.y-this.spr.height*sy,
+        this.spr.width*sx, this.spr.height*sy);
 }
 
 
 // Bunny collision
 Mushroom.prototype.bunnyCollision = function(b, tm) {
 
-    if(!this.exist || !b.exist || b.dying) return;
+    if(!this.exist || !b.exist || b.dying || this.dying) return;
 
     let x = this.pos.x-12;
     let y = this.pos.y-20;
@@ -204,6 +254,14 @@ Mushroom.prototype.bunnyCollision = function(b, tm) {
         break;
     };
 
-    b.floorCollision(x, y, w, tm);
+    if(b.floorCollision(x, y, w, tm)) {
+
+        this.bounceTimer = MUSHROOM_BOUNCE_WAIT;
+        if(this.id == 1 || this.id == 4 || this.id == 6) {
+
+            this.dying = true;
+            this.deathTimer = MUSHROOM_DEATH_TIME;
+        }
+    }
 
 }

@@ -49,7 +49,7 @@ Game.prototype.init = function(evMan, g) {
 Game.prototype.onLoad = function(assets, evMan, g) {
 
     // Create components that require assets
-    this.objm = new ObjectManager(assets, g);
+    this.objm = new ObjectManager(assets, g, this);
     this.stage = new Stage(assets);
 }
 
@@ -57,7 +57,7 @@ Game.prototype.onLoad = function(assets, evMan, g) {
 // Update
 Game.prototype.update = function(evMan, tm) {
 
-    const TIMER_SPEED = 0.005;
+    const TIMER_SPEED = 0.0025;
 
     if(evMan.transition.active) return;
 
@@ -71,6 +71,8 @@ Game.prototype.update = function(evMan, tm) {
     if(this.timer >= 1.0) {
 
         this.timer -= 1.0;
+        // Create a new bunny
+        this.objm.createBunny();
     }
 }
 

@@ -67,13 +67,13 @@ const BUNNY_DUST_INTERVAL = 6;
 
 
 // Constructor
-let Bunny = function(x, y) {
+let Bunny = function() {
 
     const DEFAUL_ACC = 0.15;
     const DUST_COUNT = 16;
 
     // Position
-    this.pos = new Vec2(x, y);
+    this.pos = new Vec2();
 
     // Speed
     this.speed = new Vec2();
@@ -94,6 +94,11 @@ let Bunny = function(x, y) {
     // Does exist & is dying
     this.exist = true;
     this.dying = false;
+    // Is (re)spawning
+    this.spawning = true;
+
+    // Is rushing
+    this.rushing = false;
 
     // Sprite
     this.spr = new AnimatedSprite(24, 24);
@@ -108,16 +113,38 @@ let Bunny = function(x, y) {
 }
 
 
+// Create self
+Bunny.prototype.createSelf = function(x, y) {
+
+    this.pos = new Vec2(x, y);
+    this.speed = new Vec2();
+    this.exist = true;
+    this.dying = false;
+    this.spr.frame = 3;
+    this.spr.row = 7;
+    this.spawning = true;
+
+    for(let i = 0; i < this.dust.length; ++ i) {
+
+        this.dust[i].exist = false;
+    }
+    this.dustTimer = BUNNY_DUST_INTERVAL;
+}
+
+
 // Control
 Bunny.prototype.control = function(evMan, tm) {
     
     const GRAV_TARGET = 2.0;
     const DJUMP_HEIGHT = -3.0;
     const FLAP_GRAV = 0.5;
+    const EPS = 0.5;
 
     let stick = evMan.vpad.stick;
     this.target.x = stick.x;
-    this.target.y = GRAV_TARGET;
+
+    if(!this.rushing)
+        this.target.y = GRAV_TARGET;
 
     // Double jump
     let s = evMan.vpad.buttons.fire1.state;
@@ -136,6 +163,20 @@ Bunny.prototype.control = function(evMan, tm) {
     if(this.flapping) {
 
         this.target.y = FLAP_GRAV;
+    }
+
+    // "Rush" down
+    let delta = evMan.vpad.stickDelta;
+    if(!this.rushing && delta.y > EPS && stick.y > EPS) {
+
+        this.rushing = true;
+        this.target.y *= 1.5;
+        this.speed.y = this.target.y;
+        this.flapping = false;
+    }
+    else if(stick.y < EPS) {
+
+        this.rushing = false;
     }
 }
 
@@ -266,12 +307,33 @@ Bunny.prototype.die = function(globalSpeed, tm) {
 }
 
 
+// Spawn
+Bunny.prototype.spawn = function(tm) {
+
+    const SPAWN_SPEED = 8;
+
+    this.spr.animate(7, 3, -1, SPAWN_SPEED, tm);
+    if(this.spr.frame < 0) {
+
+        this.spr.frame = 0;
+        this.spawning = false;
+    }
+}
+
+
 // Update
-Bunny.prototype.update = function(globalSpeed, evMan, tm) {
+Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
 
     const FLOOR_Y = 128-12;
 
     if(!this.exist) return;
+
+    // (Re)spawn
+    if(this.spawning) {
+
+        this.spawn(tm);
+        return;
+    }
 
     this.updateDust(tm);
     // Die
@@ -292,6 +354,16 @@ Bunny.prototype.update = function(globalSpeed, evMan, tm) {
         this.spr.frame = 0,
         this.spr.row = 3;
         this.dying = true;
+
+        // If too close the border, warp
+        if(this.pos.x < 24)
+            this.pos.x += 160;
+
+        -- oman.bunnyCount;
+        if(oman.bunnyCount <= 0) {
+            // Create a new bunny
+            oman.createBunny();
+        }
     }
 }
 
@@ -317,7 +389,7 @@ Bunny.prototype.draw = function(g) {
     // Draw sprite
     this.spr.draw(g, g.bitmaps.bunny, this.pos.x-12, this.pos.y-20);
     // Draw looped
-    if(this.pos.x < 24)
+    if(this.pos.x < 24 && !this.dying)
         this.spr.draw(g, g.bitmaps.bunny, this.pos.x-12+160, this.pos.y-20);
     else if(this.pos.x > 160-24)
         this.spr.draw(g, g.bitmaps.bunny, this.pos.x-12-160, this.pos.y-20);
@@ -328,6 +400,7 @@ Bunny.prototype.draw = function(g) {
 Bunny.prototype.floorCollision = function(x, y, w, tm) {
 
     const BOUNCE_HEIGHT = -3.0;
+    const RUSH_BONUS = 1.25;
 
     const COL_OFF_TOP = -0.5;
     const COL_OFF_BOTTOM = 1.0;
@@ -346,6 +419,8 @@ Bunny.prototype.floorCollision = function(x, y, w, tm) {
 
         this.pos.y = y;
         this.speed.y = BOUNCE_HEIGHT;
+        if(this.rushing)
+            this.speed.y *= RUSH_BONUS;
         this.djump = false;
 
         return true;

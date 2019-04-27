@@ -3,7 +3,7 @@
 
 
 // Constructor
-let ObjectManager = function(assets, g) {
+let ObjectManager = function(assets, g, gameRef) {
 
     const MUSHROOM_COUNT = 8;
     const BUNNY_COUNT = 8;
@@ -15,15 +15,37 @@ let ObjectManager = function(assets, g) {
         this.mushrooms[i] = new Mushroom();
     }
     this.bunnies = new Array(BUNNY_COUNT);
-    this.bunnies[0] = new Bunny(32, 32);
-    for(let i = 1; i < this.bunnies.length; ++ i) {
+    for(let i = 0; i < this.bunnies.length; ++ i) {
 
         this.bunnies[i] = new Bunny(-1, -1);
         this.bunnies[i].exist = false;
     }
+    this.bunnies[0].createSelf(24, 24);
 
     // Mushroom timer
     this.mushroomTimer = 0;
+
+    // Laziness
+    this.gameRef = gameRef;
+    // Bunny count
+    this.bunnyCount = 1;
+}
+
+
+// Find first object that does not exist
+// in an object array
+ObjectManager.prototype.findFirst = function(arr) {
+
+    let m = null;
+    for(let i = 0; i < arr.length; ++ i) {
+
+        if(!arr[i].exist) {
+
+            m = arr[i];
+            break;
+        }
+    }
+    return m;
 }
 
 
@@ -34,15 +56,7 @@ ObjectManager.prototype.createMushroom = function() {
     const MAX_MUL = 3;
 
     // Find the first mushroom that does not exist
-    let m = null;
-    for(let i = 0; i < this.mushrooms.length; ++ i) {
-
-        if(!this.mushrooms[i].exist) {
-
-            m = this.mushrooms[i];
-            break;
-        }
-    }
+    let m = this.findFirst(this.mushrooms);
     if(m == null) return;
 
     // Create mushroom
@@ -65,6 +79,24 @@ ObjectManager.prototype.createMushroom = function() {
     }
 
     this.mushroomTimer += BASE_TIME * mul;
+}
+
+
+// Create a new bunny
+ObjectManager.prototype.createBunny = function() {
+
+    // Find the first bunny that does not exist
+    let b = this.findFirst(this.bunnies);
+    if(b == null) return;
+
+    // Create bunny
+    b.createSelf(24, 24);
+
+    this.gameRef.timer -= 1.0;
+    if(this.gameRef.timer < 0)
+        this.gameRef.timer = 0;
+
+    ++ this.bunnyCount;
 }
 
 
@@ -91,7 +123,7 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
     // Update bunnies
     for(let i = 0; i < this.bunnies.length; ++ i) {
 
-        this.bunnies[i].update(globalSpeed, evMan, tm);
+        this.bunnies[i].update(globalSpeed, evMan, this, tm);
     }
     
 }
