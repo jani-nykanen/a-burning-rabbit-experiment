@@ -15,7 +15,7 @@ let ObjectManager = function(assets, g) {
         this.mushrooms[i] = new Mushroom();
     }
     this.bunnies = new Array(BUNNY_COUNT);
-    this.bunnies[0] = new Bunny(64, 64);
+    this.bunnies[0] = new Bunny(32, 32);
     for(let i = 1; i < this.bunnies.length; ++ i) {
 
         this.bunnies[i] = new Bunny(-1, -1);
@@ -91,7 +91,7 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
     // Update bunnies
     for(let i = 0; i < this.bunnies.length; ++ i) {
 
-        this.bunnies[i].update(evMan, tm);
+        this.bunnies[i].update(globalSpeed, evMan, tm);
     }
     
 }
@@ -99,6 +99,12 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
 
 // Draw
 ObjectManager.prototype.draw = function(g) {
+
+    // "Pre-"draw bunnies
+    for(let i = 0; i < this.bunnies.length; ++ i) {
+
+        this.bunnies[i].preDraw(g);
+    }
 
     // Draw mushrooms & their shadowns
     for(let i = 0; i < this.mushrooms.length; ++ i) {
@@ -109,7 +115,7 @@ ObjectManager.prototype.draw = function(g) {
 
         this.mushrooms[i].draw(g);
     }
-
+    
     // Draw bunnies
     for(let i = 0; i < this.bunnies.length; ++ i) {
 
