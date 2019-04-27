@@ -39,7 +39,7 @@ ObjectManager.prototype.createMushroom = function() {
     if(m == null) return;
 
     // Create mushroom
-    let id = (Math.random()*8)|0;
+    let id = (Math.random()*9)|0;
     let x = 160+24;
     let y = 128-12;
     if(id == 5 || id == 6 || id == 8) {

@@ -22,7 +22,6 @@ Mushroom.prototype.createSelf = function(x, y, id) {
     this.pos = new Vec2(x, y);
     this.startPos = this.pos.copy();
     this.id = id;
-    this.spcTimer = 0;
 
     this.spr = new AnimatedSprite(24, 24);
     if(id == 2)
@@ -91,10 +90,18 @@ Mushroom.prototype.animate = function(tm) {
 // Update
 Mushroom.prototype.update = function(globalSpeed, evMan, tm) {
 
+    const FLY_SPEED = 0.5;
+
     if(!this.exist) return;
 
     // Animate
     this.animate(tm);
+
+    // Special behavior
+    if(this.id == 8) {
+
+        this.pos.x -= FLY_SPEED*tm
+    }
 
     // Update pos
     this.pos.x -= globalSpeed * tm;
@@ -112,5 +119,6 @@ Mushroom.prototype.draw = function(g) {
 
     // Draw sprite
     this.spr.draw(g, g.bitmaps.mushrooms, 
-        this.pos.x-this.spr.width/2, this.pos.y-this.spr.height);
+        Math.floor(this.pos.x)-this.spr.width/2, 
+        this.pos.y-this.spr.height);
 }
