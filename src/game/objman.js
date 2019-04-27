@@ -46,11 +46,16 @@ ObjectManager.prototype.createMushroom = function() {
 
         y -= 32;
     }
+    else if(id == 2) {
+        
+        x += 8;
+    }
     m.createSelf(x, y, id);
 
     let mul = ((1+Math.random()*MAX_MUL)|0);
-    if(id == 2 && mul == 1)
+    if(id == 2 && mul == 1) {
         mul = 2;
+    }
 
     this.mushroomTimer += BASE_TIME * mul;
 }
@@ -88,7 +93,11 @@ ObjectManager.prototype.stageCollision = function(stage, cam, tm) {
 // Draw
 ObjectManager.prototype.draw = function(g) {
 
-    // Update mushrooms
+    // Draw mushrooms & their shadowns
+    for(let i = 0; i < this.mushrooms.length; ++ i) {
+
+        this.mushrooms[i].drawShadow(g);
+    }
     for(let i = 0; i < this.mushrooms.length; ++ i) {
 
         this.mushrooms[i].draw(g);
