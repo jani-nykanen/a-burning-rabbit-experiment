@@ -4,7 +4,6 @@
 
 const MUSHROOM_JUMP_WAIT = 30;
 const MUSHROOM_BOUNCE_WAIT = 30;
-const MUSHROOM_DEATH_TIME = 20;
 
 
 // Constructor
@@ -26,6 +25,7 @@ let Mushroom = function() {
     // Dying
     this.dying = false;
     this.deathTimer = 0;
+    this.deathWait = 0;
 }
 
 
@@ -38,6 +38,7 @@ Mushroom.prototype.createSelf = function(x, y, id) {
     this.id = id;
     this.dying = false;
     this.deathTimer = 0;
+    this.bounceTimer = 0;
 
     this.spr = new AnimatedSprite(24, 24);
     if(id == 2)
@@ -190,7 +191,7 @@ Mushroom.prototype.drawShadow = function(g) {
     let scale = 1.0 + (this.pos.y- (this.startPos.y)) / (64);
     if(this.dying) {
 
-        let t = this.deathTimer/MUSHROOM_DEATH_TIME;
+        let t = this.deathTimer/this.deathWait;
         scale *= t;
     }
 
@@ -210,9 +211,15 @@ Mushroom.prototype.draw = function(g) {
     let sy = 1;
     if(this.dying) {
 
-        let t = this.deathTimer/MUSHROOM_DEATH_TIME;
+        let t = this.deathTimer/this.deathWait;
+        let d = (this.deathWait / 4)|0;
+        t = ((t*d)|0) / d;
+        
+            
         sx = t;
         sy = t;
+
+
     }
     else if(this.bounceTimer > 0) {
 
@@ -260,7 +267,8 @@ Mushroom.prototype.bunnyCollision = function(b, tm) {
         if(this.id == 1 || this.id == 4 || this.id == 6) {
 
             this.dying = true;
-            this.deathTimer = MUSHROOM_DEATH_TIME;
+            this.deathWait = this.id == 4 ? 30 : 20;
+            this.deathTimer = this.deathWait;;
         }
     }
 

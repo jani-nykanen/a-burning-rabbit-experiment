@@ -110,6 +110,9 @@ let Bunny = function() {
         this.dust[i] = new Dust();
     }
     this.dustTimer = BUNNY_DUST_INTERVAL;
+
+    // Gold value
+    this.goldValue = 0.0;
 }
 
 
@@ -123,6 +126,7 @@ Bunny.prototype.createSelf = function(x, y) {
     this.spr.frame = 3;
     this.spr.row = 7;
     this.spawning = true;
+    this.goldValue = 0.0;
 
     for(let i = 0; i < this.dust.length; ++ i) {
 
@@ -325,6 +329,7 @@ Bunny.prototype.spawn = function(tm) {
 Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
 
     const FLOOR_Y = 128-12;
+    const GOLD_SPEED = 0.0025;
 
     if(!this.exist) return;
 
@@ -343,6 +348,9 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
         return;
     }
 
+    // Update gold
+    this.goldValue += GOLD_SPEED * tm;
+
     this.control(evMan, tm);
     this.move(evMan, tm);
     this.animate(evMan, tm);
@@ -354,6 +362,7 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
         this.spr.frame = 0,
         this.spr.row = 3;
         this.dying = true;
+        this.goldValue = 0.0;
 
         // If too close the border, warp
         if(this.pos.x < 24)
@@ -373,11 +382,43 @@ Bunny.prototype.preDraw = function(g) {
 
     if(!this.exist) return;
 
+    // Draw shadow
+    let t = 1.0 - (128-12 - this.pos.y) / 144;
+    g.drawScaledBitmapRegion(g.bitmaps.mushrooms, 0, 24, 24, 24,
+        Math.floor(this.pos.x)-12*t, 
+        128-10 -20*t - 4, 24*t, 24*t);
+    if(this.pos.x < 24 && !!this.dying)
+        g.drawScaledBitmapRegion(g.bitmaps.mushrooms, 0, 24, 24, 24,
+            Math.floor(this.pos.x)-12*t + 160, 
+            128-10 -20*t - 4, 24*t, 24*t);
+    else if(this.pos.x > 160-24)
+    g.drawScaledBitmapRegion(g.bitmaps.mushrooms, 0, 24, 24, 24,
+        Math.floor(this.pos.x)-12*t - 160, 
+        128-10 -20*t - 4, 24*t, 24*t);
+
     // Draw dust
     for(let i = 0; i < this.dust.length; ++ i) {
 
         this.dust[i].draw(g);
     }
+}
+
+
+// Draw sprite
+Bunny.prototype.drawSprite = function(g, dx, dy) {
+
+    if(this.goldValue < 1.0) {
+        // Draw sprite
+        this.spr.draw(g, g.bitmaps.bunny, 
+            this.pos.x-12 + dx, this.pos.y-20 + dy);
+    }
+
+    // Draw golden layer
+    g.setGlobalAlpha(this.goldValue);
+    this.spr.drawFrame(g, g.bitmaps.bunny, 
+        this.spr.frame+4, this.spr.row,
+        this.pos.x-12 + dx, this.pos.y-20 + dy);
+    g.setGlobalAlpha(1.0);
 }
 
 
@@ -387,12 +428,12 @@ Bunny.prototype.draw = function(g) {
     if(!this.exist) return;
 
     // Draw sprite
-    this.spr.draw(g, g.bitmaps.bunny, this.pos.x-12, this.pos.y-20);
+    this.drawSprite(g, 0, 0);
     // Draw looped
     if(this.pos.x < 24 && !this.dying)
-        this.spr.draw(g, g.bitmaps.bunny, this.pos.x-12+160, this.pos.y-20);
+        this.drawSprite(g, 160, 0);
     else if(this.pos.x > 160-24)
-        this.spr.draw(g, g.bitmaps.bunny, this.pos.x-12-160, this.pos.y-20);
+        this.drawSprite(g, -160, 0);
 }
 
 

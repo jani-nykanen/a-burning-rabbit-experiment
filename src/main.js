@@ -20,6 +20,7 @@ let main = function() {
             grass: "grass.png",
             mushrooms: "mushrooms.png",
             bunny: "bunny.png",
+            coin: "coin.png",
         },
 
         // Documents
