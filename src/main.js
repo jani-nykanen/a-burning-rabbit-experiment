@@ -18,6 +18,7 @@ let main = function() {
             bush: "bush.png",
             fence: "fence.png",
             grass: "grass.png",
+            mushrooms: "mushrooms.png",
         },
 
         // Documents

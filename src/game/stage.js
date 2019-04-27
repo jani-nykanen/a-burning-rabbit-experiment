@@ -13,10 +13,10 @@ let Stage = function(assets) {
 
 
 // Update
-Stage.prototype.update = function(evMan, tm) {
+Stage.prototype.update = function(globalSpeed, evMan, tm) {
 
-    const LAYER_SPEEDS = [
-        0.25, 0.5, 0.75, 1.0, 1.5
+    let LAYER_SPEEDS = [
+        0.125, globalSpeed*0.25, globalSpeed*0.5, globalSpeed*0.75, globalSpeed
     ];
     const LAYER_MOD = [
         160, 160, 160, 32, 64,

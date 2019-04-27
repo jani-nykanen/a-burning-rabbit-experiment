@@ -23,6 +23,9 @@ Game.prototype.init = function(evMan, g) {
 
     // Create components that do not require assets
     this.cam = new Camera(0, 0);
+
+    // Global speed
+    this.globalSpeed = 1.0;
 }
 
 
@@ -41,11 +44,11 @@ Game.prototype.update = function(evMan, tm) {
     if(evMan.transition.active) return;
 
     // Update objects
-    this.objm.update(evMan, this.cam, tm);
+    this.objm.update(this.globalSpeed, evMan, this.cam, tm);
     this.objm.stageCollision(this.stage, this.cam, tm);
 
     // Update stage
-    this.stage.update(evMan, tm);
+    this.stage.update(this.globalSpeed, evMan, tm);
 
     // Transition test
     if(evMan.vpad.buttons.fire1.state == State.Pressed) {
