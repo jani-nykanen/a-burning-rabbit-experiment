@@ -21,9 +21,12 @@ let Bunny = function(x, y) {
     this.width = 16;
     this.height = 16;
 
-    // Does exist
+    // Does exist & is dying
     this.exist = true;
     this.dying = false;
+
+    // Sprite
+    this.spr = new AnimatedSprite(24, 24);
 }
 
 
@@ -96,7 +99,9 @@ Bunny.prototype.animate = function(evMan, tm) {
 
 
 // Update
-Bunny.prototype.update = function(evMan, cam, tm) {
+Bunny.prototype.update = function(evMan, tm) {
+
+    if(!this.exist) return;
 
     this.control(evMan, tm);
     this.move(evMan, tm);
@@ -108,5 +113,8 @@ Bunny.prototype.update = function(evMan, cam, tm) {
 // Draw
 Bunny.prototype.draw = function(g) {
 
-    
+    if(!this.exist) return;
+
+    // Draw sprite
+    this.spr.draw(g, g.bitmaps.bunny, this.pos.x-12, this.pos.y-20);
 }

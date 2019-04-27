@@ -6,12 +6,20 @@
 let ObjectManager = function(assets, g) {
 
     const MUSHROOM_COUNT = 8;
+    const BUNNY_COUNT = 8;
 
     // Create components
     this.mushrooms = new Array(MUSHROOM_COUNT);
     for(let i = 0; i < this.mushrooms.length; ++ i) {
 
         this.mushrooms[i] = new Mushroom();
+    }
+    this.bunnies = new Array(BUNNY_COUNT);
+    this.bunnies[0] = new Bunny(64, 64);
+    for(let i = 1; i < this.bunnies.length; ++ i) {
+
+        this.bunnies[i] = new Bunny(-1, -1);
+        this.bunnies[i].exist = false;
     }
 
     // Mushroom timer
@@ -74,6 +82,12 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
 
         this.mushrooms[i].update(globalSpeed, evMan, tm);
     }
+
+    // Update bunnies
+    for(let i = 0; i < this.bunnies.length; ++ i) {
+
+        this.bunnies[i].update(evMan, tm);
+    }
     
 }
 
@@ -96,6 +110,12 @@ ObjectManager.prototype.draw = function(g) {
     for(let i = 0; i < this.mushrooms.length; ++ i) {
 
         this.mushrooms[i].draw(g);
+    }
+
+    // Draw bunnies
+    for(let i = 0; i < this.bunnies.length; ++ i) {
+
+        this.bunnies[i].draw(g);
     }
 
 
