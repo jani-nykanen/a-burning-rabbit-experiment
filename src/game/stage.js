@@ -1,5 +1,5 @@
 // Stage object template
-// (c) Insert your name here
+// (c) 2019 Jani Nykänen
 
 
 // Constructor

@@ -1,5 +1,6 @@
 // The default starting scene
-// (c) Insert your name here
+// (c) 2019 Jani Nykänen
+
 
 // Game scene
 let Game = function() {
@@ -40,8 +41,9 @@ Game.prototype.init = function(evMan, g) {
     // Set defaults
     this.globalSpeed = 1.0;
     this.timer = 0.0;
-    this.lives = 3;
+    this.lives = 10;
     this.coins = 0;
+    this.paused = false;
 }
 
 
@@ -60,6 +62,15 @@ Game.prototype.update = function(evMan, tm) {
     const TIMER_SPEED = 0.0025;
 
     if(evMan.transition.active) return;
+
+    if(evMan.vpad.buttons.start.state == State.Pressed) {
+
+        this.paused = !this.paused;
+    }
+
+    if(this.paused) {
+        return;
+    }
 
     // Update stage
     this.stage.update(this.globalSpeed, evMan, tm);
@@ -94,4 +105,12 @@ Game.prototype.draw = function(g) {
     this.objm.draw(g);
     // Draw HUD
     this.drawHUD(g);
+
+    // Pause
+    if(this.paused) {
+
+        g.fillRect(0, 0, 160, 144, {r:0, g:0, b:0, a:0.33});
+        g.drawText(g.bitmaps.font, "GAME PAUSED", 
+            160/2, 144/2-4 -16, 0,0, true);
+    }
 }

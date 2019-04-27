@@ -1,5 +1,5 @@
 // A bunny
-// (c) Insert name here
+// (c) 2019 Jani Nykänen
 
 
 const DUST_TIME_MAX = 30;
@@ -329,7 +329,8 @@ Bunny.prototype.spawn = function(tm) {
 Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
 
     const FLOOR_Y = 128-12;
-    const GOLD_SPEED = 0.0025;
+    const GOLD_SPEED = 0.00125;
+    const MAX_COIN = 6;
 
     if(!this.exist) return;
 
@@ -349,7 +350,12 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
     }
 
     // Update gold
-    this.goldValue += GOLD_SPEED * tm;
+    if(this.goldValue < 1.0) {
+        
+        this.goldValue += GOLD_SPEED * tm;
+        if(this.goldValue > 1.0)
+            this.goldValue = 1.0;
+    }
 
     this.control(evMan, tm);
     this.move(evMan, tm);
@@ -357,6 +363,11 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
 
     // Die when colliding floor
     if(this.pos.y >= FLOOR_Y) {
+
+        // Create coins
+        oman.createCoins(this.pos.x, this.pos.y,
+            ((MAX_COIN*this.goldValue) | 0)  +1
+             );
 
         this.pos.y = FLOOR_Y;
         this.spr.frame = 0,
@@ -372,6 +383,7 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
         if(oman.bunnyCount <= 0) {
             // Create a new bunny
             oman.createBunny();
+            -- oman.gameRef.lives;
         }
     }
 }
@@ -387,14 +399,14 @@ Bunny.prototype.preDraw = function(g) {
     g.drawScaledBitmapRegion(g.bitmaps.mushrooms, 0, 24, 24, 24,
         Math.floor(this.pos.x)-12*t, 
         128-10 -20*t - 4, 24*t, 24*t);
-    if(this.pos.x < 24 && !!this.dying)
+    if(this.pos.x < 24 && !this.dying)
         g.drawScaledBitmapRegion(g.bitmaps.mushrooms, 0, 24, 24, 24,
             Math.floor(this.pos.x)-12*t + 160, 
             128-10 -20*t - 4, 24*t, 24*t);
     else if(this.pos.x > 160-24)
-    g.drawScaledBitmapRegion(g.bitmaps.mushrooms, 0, 24, 24, 24,
-        Math.floor(this.pos.x)-12*t - 160, 
-        128-10 -20*t - 4, 24*t, 24*t);
+        g.drawScaledBitmapRegion(g.bitmaps.mushrooms, 0, 24, 24, 24,
+            Math.floor(this.pos.x)-12*t - 160, 
+            128-10 -20*t - 4, 24*t, 24*t);
 
     // Draw dust
     for(let i = 0; i < this.dust.length; ++ i) {

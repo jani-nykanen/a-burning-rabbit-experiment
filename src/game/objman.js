@@ -1,5 +1,5 @@
 // Object manager
-// (c) Insert your name here
+// (c) 2019 Jani Nykänen
 
 
 // Constructor
@@ -7,6 +7,7 @@ let ObjectManager = function(assets, g, gameRef) {
 
     const MUSHROOM_COUNT = 8;
     const BUNNY_COUNT = 8;
+    const COIN_COUNT = 16;
 
     // Create components
     this.mushrooms = new Array(MUSHROOM_COUNT);
@@ -21,6 +22,12 @@ let ObjectManager = function(assets, g, gameRef) {
         this.bunnies[i].exist = false;
     }
     this.bunnies[0].createSelf(24, 24);
+
+    this.coins = new Array(COIN_COUNT);
+    for(let i = 0; i < this.coins.length; ++ i) {
+
+        this.coins[i] = new Coin();
+    }
 
     // Mushroom timer
     this.mushroomTimer = 0;
@@ -100,6 +107,27 @@ ObjectManager.prototype.createBunny = function() {
 }
 
 
+// Create coins
+ObjectManager.prototype.createCoins = function(x, y, count) {
+
+    let angle = count == 1 ? Math.PI/2 : Math.PI/4.0;
+    let angleJump = (Math.PI/2.0) / count;
+    let c, height;
+    for(let i = 0; i < count; ++ i) {
+
+        c = this.findFirst(this.coins);
+        if(c == null) break;
+
+        height = 1.0 + 0.25*Math.random();
+        c.createSelf(x, y, 
+            Math.cos(angle), 
+            -Math.abs(Math.sin(angle)*2*height));
+
+        angle += angleJump;
+    }
+}
+
+
 // Update
 ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
 
@@ -119,6 +147,18 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
             this.mushrooms[i].bunnyCollision(this.bunnies[j], tm);
         }
     }
+
+    // Update coins
+    for(let i = 0; i < this.coins.length; ++ i) {
+
+        this.coins[i].update(globalSpeed, tm);
+        // Bunny collision
+        for(let j = 0; j < this.bunnies.length; ++ j) {
+
+            this.coins[i].bunnyCollision(this.bunnies[j], evMan, this.gameRef);
+        }
+    }
+
 
     // Update bunnies
     for(let i = 0; i < this.bunnies.length; ++ i) {
@@ -146,6 +186,12 @@ ObjectManager.prototype.draw = function(g) {
     for(let i = 0; i < this.mushrooms.length; ++ i) {
 
         this.mushrooms[i].draw(g);
+    }
+
+    // Draw coins
+    for(let i = 0; i < this.coins.length; ++ i) {
+
+        this.coins[i].draw(g);
     }
     
     // Draw bunnies
