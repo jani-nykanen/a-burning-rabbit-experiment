@@ -8,7 +8,6 @@ let ObjectManager = function(assets, g) {
     const MUSHROOM_COUNT = 8;
 
     // Create components
-    this.player = new Player(g.canvas.width/2, g.canvas.height/2);
     this.mushrooms = new Array(MUSHROOM_COUNT);
     for(let i = 0; i < this.mushrooms.length; ++ i) {
 
@@ -75,9 +74,6 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
 
         this.mushrooms[i].update(globalSpeed, evMan, tm);
     }
-
-    // Update player
-    this.player.update(evMan, cam, tm);
     
 }
 
@@ -85,8 +81,7 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
 // Stage collision
 ObjectManager.prototype.stageCollision = function(stage, cam, tm) {
 
-    // Player-to-stage collision
-    stage.playerCollision(this.player, tm);
+
 }
 
 

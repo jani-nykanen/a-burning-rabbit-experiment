@@ -19,6 +19,7 @@ let main = function() {
             fence: "fence.png",
             grass: "grass.png",
             mushrooms: "mushrooms.png",
+            bunny: "bunny.png",
         },
 
         // Documents

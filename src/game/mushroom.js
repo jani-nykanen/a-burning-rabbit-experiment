@@ -54,7 +54,8 @@ Mushroom.prototype.animate = function(tm) {
 
     const FLY_ANIM_SPEED = 5;
     const FLOAT_SPEED = 0.1;
-    const FLOAT_AMPL = 4.0;
+    const FLOAT_AMPL1 = 4.0;
+    const FLOAT_AMPL2 = 2.0;
 
     if(this.id == 0 || this.id == 1) {
 
@@ -77,14 +78,13 @@ Mushroom.prototype.animate = function(tm) {
         this.spr.animate(this.id-1, 0, 3, FLY_ANIM_SPEED, tm);
 
         // Floating
-        if(this.id != 8) {
+        this.spcTimer += FLOAT_SPEED * tm;
+        this.spcTimer %= Math.PI*2;
 
-            this.spcTimer += FLOAT_SPEED * tm;
-            this.spcTimer %= Math.PI*2;
-
-            this.pos.y = this.startPos.y + 
-                Math.sin(this.spcTimer)*FLOAT_AMPL;
-        }
+        this.pos.y = this.startPos.y + 
+             Math.sin(this.spcTimer)*(
+                 this.id == 8 ? FLOAT_AMPL2 : FLOAT_AMPL1
+            );
     }
     else if(this.id == 7) {
 
