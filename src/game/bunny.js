@@ -18,7 +18,7 @@ let Bunny = function(x, y) {
     this.acc = new Vec2(DEFAUL_ACC, DEFAUL_ACC);
 
     // Hitbox
-    this.width = 16;
+    this.width = 8;
     this.height = 16;
 
     // Does exist & is dying
@@ -33,18 +33,11 @@ let Bunny = function(x, y) {
 // Control
 Bunny.prototype.control = function(evMan, tm) {
     
-    const EPS = 1.0;
+    const GRAV_TARGET = 2.0;
 
     let stick = evMan.vpad.stick;
-    let l = Math.hypot(stick.x, stick.y);
-    if(l > EPS) {
-
-        stick.x /= l;
-        stick.y /= l;
-    }
-
-    this.target.x = stick.x *2;
-    this.target.y = stick.y *2;
+    this.target.x = stick.x;
+    this.target.y = GRAV_TARGET;
 }
 
 
@@ -75,13 +68,16 @@ Bunny.prototype.updateSpeed = function(speed, target, acc, tm)  {
 // Move
 Bunny.prototype.move = function(evMan, tm) {
 
+    const GRAVITY = 0.1;
+    const ACC_H = 0.1;
+
     // Update speed axes
     this.speed.x =
         this.updateSpeed(this.speed.x, this.target.x, 
-        this.acc.x, tm);
+        ACC_H, tm);
     this.speed.y =
         this.updateSpeed(this.speed.y, this.target.y, 
-        this.acc.y, tm);
+        GRAVITY, tm);
 
     // Update position
     this.pos.x += this.speed.x * tm;
@@ -89,12 +85,20 @@ Bunny.prototype.move = function(evMan, tm) {
 }
 
 
-
-
 // Animate
 Bunny.prototype.animate = function(evMan, tm) {
 
-    // ...
+    const JUMP_MOD = 0.25;
+
+    if(Math.abs(this.speed.y) < JUMP_MOD) {
+
+        this.spr.frame = 0;
+    }
+    else {
+
+        this.spr.frame = this.speed.y > 0 ? 1 : 2;
+    }
+    this.spr.row = 0;
 }
 
 
@@ -106,6 +110,9 @@ Bunny.prototype.update = function(evMan, tm) {
     this.control(evMan, tm);
     this.move(evMan, tm);
     this.animate(evMan, tm);
+
+    // TEMP
+    this.floorCollision(0, 128-12, 160, tm);
 }
 
 
@@ -117,4 +124,34 @@ Bunny.prototype.draw = function(g) {
 
     // Draw sprite
     this.spr.draw(g, g.bitmaps.bunny, this.pos.x-12, this.pos.y-20);
+}
+
+
+// Floor collision
+Bunny.prototype.floorCollision = function(x, y, w, tm) {
+
+    const BOUNCE_HEIGHT = -3.0;
+
+    const COL_OFF_TOP = -0.5;
+    const COL_OFF_BOTTOM = 1.0;
+
+    if(!this.exist || this.dying || this.speed.y < 0.0)
+        return false;
+
+    // Check if inside the horizontal area
+    if(!(this.pos.x+this.width/2 >= x && 
+        this.pos.x-this.width/2 <= x+w))
+        return false;
+
+    // Vertical collision
+    if(this.pos.y >= y+COL_OFF_TOP*tm && 
+       this.pos.y <= y+(COL_OFF_BOTTOM+this.speed.y)*tm) {
+
+        this.pos.y = y;
+        this.speed.y = BOUNCE_HEIGHT;
+
+        return true;
+    }
+
+    return false;
 }

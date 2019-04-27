@@ -177,3 +177,33 @@ Mushroom.prototype.draw = function(g) {
         Math.floor(this.pos.x)-this.spr.width/2, 
         this.pos.y-this.spr.height);
 }
+
+
+// Bunny collision
+Mushroom.prototype.bunnyCollision = function(b, tm) {
+
+    if(!this.exist || !b.exist || b.dying) return;
+
+    let x = this.pos.x-12;
+    let y = this.pos.y-20;
+    let w = 24;
+
+    switch(this.id) {
+
+    case 2:
+        w = 48;
+        x -= 4;
+        break;
+
+    case 3:
+    case 4:
+        y -= 24;
+        break;
+    
+    default:
+        break;
+    };
+
+    b.floorCollision(x, y, w, tm);
+
+}

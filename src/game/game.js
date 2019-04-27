@@ -37,9 +37,6 @@ Game.prototype.drawHUD = function(g) {
 // Initialize
 Game.prototype.init = function(evMan, g) {
 
-    // Create components that do not require assets
-    this.cam = new Camera(0, 0);
-
     // Set defaults
     this.globalSpeed = 1.0;
     this.timer = 0.0;
@@ -64,12 +61,10 @@ Game.prototype.update = function(evMan, tm) {
 
     if(evMan.transition.active) return;
 
-    // Update objects
-    this.objm.update(this.globalSpeed, evMan, this.cam, tm);
-    this.objm.stageCollision(this.stage, this.cam, tm);
-
     // Update stage
     this.stage.update(this.globalSpeed, evMan, tm);
+    // Update objects
+    this.objm.update(this.globalSpeed, evMan, this.cam, tm);
 
     // Update timer
     this.timer += TIMER_SPEED * this.globalSpeed * tm;
@@ -91,16 +86,10 @@ Game.prototype.draw = function(g) {
     // Draw background
     this.stage.drawBackground(g, this.cam);
 
-    // Use camera
-    this.cam.use(g);
-
     // Draw stage
     this.stage.draw(g, this.cam);
     // Draw objects
     this.objm.draw(g);
-
-    // Reset camera
-    g.setTranslation();
     // Draw HUD
     this.drawHUD(g);
 }

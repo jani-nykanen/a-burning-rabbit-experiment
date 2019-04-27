@@ -81,6 +81,11 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
     for(let i = 0; i < this.mushrooms.length; ++ i) {
 
         this.mushrooms[i].update(globalSpeed, evMan, tm);
+        // Bunny collision
+        for(let j = 0; j < this.bunnies.length; ++ j) {
+
+            this.mushrooms[i].bunnyCollision(this.bunnies[j], tm);
+        }
     }
 
     // Update bunnies
@@ -89,13 +94,6 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
         this.bunnies[i].update(evMan, tm);
     }
     
-}
-
-
-// Stage collision
-ObjectManager.prototype.stageCollision = function(stage, cam, tm) {
-
-
 }
 
 

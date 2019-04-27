@@ -77,10 +77,3 @@ Stage.prototype.draw = function(g, cam) {
 
     // ...
 }
-
-
-// Player collision
-Stage.prototype.playerCollision = function(pl, tm) {
-
-    // ...
-}
