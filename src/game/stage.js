@@ -3,7 +3,7 @@
 
 
 // Constructor
-let Stage = function(assets) {
+let Stage = function() {
 
     // Layer positions
     this.layerPos = new Array(5);

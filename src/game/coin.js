@@ -25,7 +25,7 @@ Coin.prototype.createSelf = function(x, y, sx, sy) {
 Coin.prototype.update = function(globalSpeed, tm) {
 
     const GRAVITY = 0.035;
-    const EPS = 0.5;
+    const EPS = 1.0;
     const ANIM_SPEED = 6;
 
     if(!this.exist) return;
@@ -41,7 +41,7 @@ Coin.prototype.update = function(globalSpeed, tm) {
 
         this.pos.y = 128-12;
 
-        this.speed.y *= -0.90;
+        this.speed.y *= -0.75;
         if(this.speed.y > -EPS) {
 
             this.exist = false;

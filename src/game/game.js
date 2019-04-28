@@ -35,24 +35,45 @@ Game.prototype.drawHUD = function(g) {
 }
 
 
+// Draw Game over!
+Game.prototype.drawGameOver = function(g) {
+
+    g.fillRect(0, 0, 160, 144, {r:0, g:0, b:0, a:0.33});
+    g.drawText(g.bitmaps.font, "GAME OVER!", 
+        160/2, 144/2-4 -16, 0,0, true);
+
+
+}
+
+
 // Initialize
 Game.prototype.init = function(evMan, g) {
+
+    this.reset();
+}
+
+
+// Reset
+Game.prototype.reset = function() {
 
     // Set defaults
     this.globalSpeed = 1.0;
     this.timer = 0.0;
-    this.lives = 10;
+    this.lives = 3;
     this.coins = 0;
     this.paused = false;
+    this.gameOver = false;
+
+    // Create components
+    this.objm = new ObjectManager(this);
+    this.stage = new Stage();
 }
 
 
 // On load
 Game.prototype.onLoad = function(assets, evMan, g) {
 
-    // Create components that require assets
-    this.objm = new ObjectManager(assets, g, this);
-    this.stage = new Stage(assets);
+    // ...
 }
 
 
@@ -60,16 +81,61 @@ Game.prototype.onLoad = function(assets, evMan, g) {
 Game.prototype.update = function(evMan, tm) {
 
     const TIMER_SPEED = 0.0025;
+    const GSPEED_REDUCE = 0.01;
 
     if(evMan.transition.active) return;
 
-    if(evMan.vpad.buttons.start.state == State.Pressed) {
+    let enterPressed = evMan.vpad.buttons.start.state == State.Pressed;
 
-        this.paused = !this.paused;
+    // Update game over
+    if(this.gameOver) {
+
+        if(enterPressed) {
+
+            evMan.transition.activate(Fade.In, 2.0, () => {
+
+                this.gameOver = false;
+                this.reset();
+            },
+            null,
+            8);
+        }
+
+        // Reduce global speed
+        if(this.globalSpeed > 0.0) {
+
+            this.globalSpeed -= GSPEED_REDUCE*tm;
+            if(this.globalSpeed < 0.0)
+                this.globalSpeed = 0.0;
+        }
+    }
+    else {
+
+        // Pause/unpause
+        if(enterPressed) {
+
+            this.paused = !this.paused;
+        }
+
+        if(this.paused) {
+            return;
+        }
+
+        // Update timer
+        this.timer += TIMER_SPEED * this.globalSpeed * tm;
+        if(this.timer >= 1.0) {
+
+            this.timer -= 1.0;
+            // Create a new bunny
+            this.objm.createBunny();
+        }
     }
 
-    if(this.paused) {
-        return;
+    // Check game over
+    if(this.lives <= 0) {
+
+        this.gameOver = true;
+        this.paused = false;
     }
 
     // Update stage
@@ -77,14 +143,6 @@ Game.prototype.update = function(evMan, tm) {
     // Update objects
     this.objm.update(this.globalSpeed, evMan, this.cam, tm);
 
-    // Update timer
-    this.timer += TIMER_SPEED * this.globalSpeed * tm;
-    if(this.timer >= 1.0) {
-
-        this.timer -= 1.0;
-        // Create a new bunny
-        this.objm.createBunny();
-    }
 }
 
 
@@ -112,5 +170,11 @@ Game.prototype.draw = function(g) {
         g.fillRect(0, 0, 160, 144, {r:0, g:0, b:0, a:0.33});
         g.drawText(g.bitmaps.font, "GAME PAUSED", 
             160/2, 144/2-4 -16, 0,0, true);
+    }
+
+    // Game over
+    if(this.gameOver) {
+
+        this.drawGameOver(g);
     }
 }

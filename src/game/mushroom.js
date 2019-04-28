@@ -68,6 +68,8 @@ Mushroom.prototype.animate = function(tm) {
     const FLOAT_SPEED = 0.1;
     const FLOAT_AMPL1 = 4.0;
     const FLOAT_AMPL2 = 2.0;
+    const GOLD_SPEED = 8;
+    const GOLD_WAIT = 30;
 
     if(this.id == 0 || this.id == 1) {
 
@@ -106,6 +108,12 @@ Mushroom.prototype.animate = function(tm) {
         else
             this.spr.frame = this.gravity < 0 ? 1 : 2;
         this.spr.row = 6;
+    }
+    else if(this.id == 9) {
+
+        this.spr.animate(8, 0, 3, 
+            this.spr.frame == 0 ? GOLD_WAIT : GOLD_SPEED, 
+            tm);
     }
 }
 
@@ -214,11 +222,9 @@ Mushroom.prototype.draw = function(g) {
         let t = this.deathTimer/this.deathWait;
         let d = (this.deathWait / 4)|0;
         t = ((t*d)|0) / d;
-        
-            
+
         sx = t;
         sy = t;
-
 
     }
     else if(this.bounceTimer > 0) {
@@ -237,7 +243,11 @@ Mushroom.prototype.draw = function(g) {
 
 
 // Bunny collision
-Mushroom.prototype.bunnyCollision = function(b, tm) {
+Mushroom.prototype.bunnyCollision = function(b, oman, tm) {
+
+    const COIN_COUNT = 5;
+    const LIFE_SPEED_X = 1.0;
+    const LIFE_SPEED_Y = 2.0;
 
     if(!this.exist || !b.exist || b.dying || this.dying) return;
 
@@ -264,11 +274,24 @@ Mushroom.prototype.bunnyCollision = function(b, tm) {
     if(b.floorCollision(x, y, w, tm)) {
 
         this.bounceTimer = MUSHROOM_BOUNCE_WAIT;
-        if(this.id == 1 || this.id == 4 || this.id == 6) {
+        if(this.id == 1 || this.id == 4 || this.id == 6 || this.id == 9) {
 
             this.dying = true;
             this.deathWait = this.id == 4 ? 30 : 20;
             this.deathTimer = this.deathWait;;
+        }
+        
+        // Create coins & life
+        if(this.id == 9) {
+
+            // Create coins
+            oman.createCoins(this.pos.x, this.pos.y,
+                COIN_COUNT);
+
+            // Create life
+            oman.createLife(this.pos.x, this.pos.y, 
+                LIFE_SPEED_X, LIFE_SPEED_Y);
+            
         }
     }
 

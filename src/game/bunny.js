@@ -331,6 +331,9 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
     const FLOOR_Y = 128-12;
     const GOLD_SPEED = 0.00125;
     const MAX_COIN = 6;
+    const LIFE_SPEED_X = 1.0;
+    const LIFE_SPEED_Y = 2.0;
+    const LIFE_EPS = 0.1;
 
     if(!this.exist) return;
 
@@ -369,6 +372,13 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
             ((MAX_COIN*this.goldValue) | 0)  +1
              );
 
+        // Create life?
+        if(this.goldValue >= 1.0-LIFE_EPS) {
+
+            oman.createLife(this.pos.x, this.pos.y, 
+                LIFE_SPEED_X, LIFE_SPEED_Y);
+        }
+
         this.pos.y = FLOOR_Y;
         this.spr.frame = 0,
         this.spr.row = 3;
@@ -380,10 +390,10 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
             this.pos.x += 160;
 
         -- oman.bunnyCount;
+        -- oman.gameRef.lives;
         if(oman.bunnyCount <= 0) {
             // Create a new bunny
             oman.createBunny();
-            -- oman.gameRef.lives;
         }
     }
 }

@@ -21,6 +21,7 @@ let main = function() {
             mushrooms: "mushrooms.png",
             bunny: "bunny.png",
             coin: "coin.png",
+            life: "life.png",
         },
 
         // Documents
