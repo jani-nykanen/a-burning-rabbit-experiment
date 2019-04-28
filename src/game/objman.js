@@ -23,7 +23,8 @@ let ObjectManager = function(gameRef) {
         this.bunnies[i] = new Bunny(-1, -1);
         this.bunnies[i].exist = false;
     }
-    this.bunnies[0].createSelf(24, 24);
+    // Create a starting bunny
+    this.bunnies[0].createSelf(80, 0, true);
 
     this.coins = new Array(COIN_COUNT);
     for(let i = 0; i < this.coins.length; ++ i) {
@@ -35,6 +36,14 @@ let ObjectManager = function(gameRef) {
 
         this.lives[i] = new Life();
     }
+
+    // Create starting mushrooms
+    let m = this.findFirst(this.mushrooms);
+    m.createSelf(32, 128-12, 2);
+    m = this.findFirst(this.mushrooms);
+    m.createSelf(112, 128-12, 0);
+    m = this.findFirst(this.mushrooms);
+    m.createSelf(112+32, 128-12, 0);
 
     // Mushroom timer
     this.mushroomTimer = 0;
@@ -72,8 +81,8 @@ ObjectManager.prototype.createMushroom = function() {
     const MUSHROOM_ID_MAX = 9;
     const BASE_TIME = 32;
     const MAX_MUL = 3;
-    const LIFE_WAIT_MIN = 5;
-    const LIFE_WAIT_MAX = 10;
+    const LIFE_WAIT_MIN = 8;
+    const LIFE_WAIT_MAX = 16;
     const LIFE_HEIGHT_VARY = 16;
 
     // Probabilities
@@ -159,17 +168,17 @@ ObjectManager.prototype.createBunny = function() {
 
 
 // Create coins
-ObjectManager.prototype.createCoins = function(x, y, count) {
+ObjectManager.prototype.createCoins = function(x, y, count, uniformSpeed) {
 
     let angle = count == 1 ? Math.PI/2 : Math.PI/4.0;
-    let angleJump = (Math.PI/2.0) / count;
+    let angleJump = (Math.PI/2.0) / (count-1);
     let c, height;
     for(let i = 0; i < count; ++ i) {
 
         c = this.findFirst(this.coins);
         if(c == null) break;
 
-        height = 1.0 + 0.25*Math.random();
+        height = uniformSpeed ? 0.67 : 1.0 + 0.25*Math.random();
         c.createSelf(x, y, 
             Math.cos(angle), 
             -Math.abs(Math.sin(angle)*2*height));

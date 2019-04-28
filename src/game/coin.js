@@ -37,7 +37,7 @@ Coin.prototype.update = function(globalSpeed, tm) {
     this.pos.y += this.speed.y * tm;
 
     // Bounce
-    if(this.pos.y >= 128-12) {
+    if(this.pos.y >= 128-12 && this.speed.y > 0) {
 
         this.pos.y = 128-12;
 
@@ -88,6 +88,8 @@ Coin.prototype.bunnyCollision = function(b, evMan, game) {
        b.pos.y-b.height < this.pos.y) {
 
         this.exist = false;
-        ++ game.coins; 
+
+        if(!game.gameOver)
+            ++ game.coins; 
     }
 }

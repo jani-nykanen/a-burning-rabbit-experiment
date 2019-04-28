@@ -122,7 +122,7 @@ let Bunny = function() {
 
 
 // Create self
-Bunny.prototype.createSelf = function(x, y) {
+Bunny.prototype.createSelf = function(x, y, disableControls) {
 
     this.pos = new Vec2(x, y);
     this.speed = new Vec2();
@@ -132,6 +132,12 @@ Bunny.prototype.createSelf = function(x, y) {
     this.spr.row = 7;
     this.spawning = true;
     this.goldValue = 0.0;
+    this.disableControls = disableControls;
+    if(disableControls) {
+
+        this.spawning = false;
+        this.goldValue = 0.5;
+    }
 
     for(let i = 0; i < this.dust.length; ++ i) {
 
@@ -151,12 +157,15 @@ Bunny.prototype.control = function(evMan, tm) {
     const DJUMP_SPEED = 2.0;
 
     let stick = evMan.vpad.stick;
-    this.target.x = stick.x;
-
     if(!this.rushing) {
 
         this.target.y = GRAV_TARGET;
     }
+
+    if(this.disableControls)
+        return;
+
+    this.target.x = stick.x;
 
     // Double jump
     let s = evMan.vpad.buttons.fire1.state;
@@ -332,9 +341,9 @@ Bunny.prototype.die = function(globalSpeed, tm) {
 // Spawn
 Bunny.prototype.spawn = function(tm) {
 
-    const SPAWN_SPEED = 8;
+    const SPAWN_SPEED = 7;
 
-    this.spr.animate(7, 3, -1, SPAWN_SPEED, tm);
+    this.spr.animate(7, 8, -1, SPAWN_SPEED, tm);
     if(this.spr.frame < 0) {
 
         this.spr.frame = 0;
@@ -386,8 +395,10 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
     if(this.pos.y >= FLOOR_Y) {
 
         // Create coins
+        
         oman.createCoins(this.pos.x, this.pos.y,
-            ((MAX_COIN*this.goldValue) | 0)  +1
+            this.disableControls ? 3 : (((MAX_COIN*this.goldValue) | 0)  +1),
+            this.disableControls
              );
 
         // Create life?

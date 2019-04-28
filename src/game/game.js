@@ -40,9 +40,14 @@ Game.prototype.drawGameOver = function(g) {
 
     g.fillRect(0, 0, 160, 144, {r:0, g:0, b:0, a:0.33});
     g.drawText(g.bitmaps.font, "GAME OVER!", 
-        160/2, 144/2-4 -16, 0,0, true);
+        160/2, 40, 0,0, true);
 
-
+    // Draw score
+    g.drawText(g.bitmaps.font, "SCORE: " + String(this.coins), 
+        160/2, 56, 0,0, true);
+    // Draw record
+    g.drawText(g.bitmaps.font, "RECORD: " + String(this.record), 
+        160/2, 66, 0,0, true);
 }
 
 
@@ -57,16 +62,29 @@ Game.prototype.init = function(evMan, g) {
 Game.prototype.reset = function() {
 
     // Set defaults
-    this.globalSpeed = 1.0;
+    this.globalSpeed = 0.0;
     this.timer = 0.0;
-    this.lives = 3;
+    this.lives = 4;
     this.coins = 0;
     this.paused = false;
     this.gameOver = false;
+    this.record = window.localStorage.record;
+    if(this.record == null)
+        this.record = 0;
+    else
+        this.record = Number(this.record);
 
     // Create components
     this.objm = new ObjectManager(this);
     this.stage = new Stage();
+
+    // Speed timer
+    this.speedTimer = 0;
+    // Speed state
+    this.speedState = 0;
+
+    // Ready-go stuff
+    this.readyPhase = 0;
 }
 
 
@@ -82,6 +100,10 @@ Game.prototype.update = function(evMan, tm) {
 
     const TIMER_SPEED = 0.0025;
     const GSPEED_REDUCE = 0.01;
+    const SPEED_LIMITS = [
+        30*60, 60*60, 90*60, 120*60
+    ];
+    const GSPEED_INCREASE = 0.01;
 
     if(evMan.transition.active) return;
 
@@ -109,7 +131,7 @@ Game.prototype.update = function(evMan, tm) {
                 this.globalSpeed = 0.0;
         }
     }
-    else {
+    else if(this.readyPhase > 1) {
 
         // Pause/unpause
         if(enterPressed) {
@@ -122,12 +144,41 @@ Game.prototype.update = function(evMan, tm) {
         }
 
         // Update timer
-        this.timer += TIMER_SPEED * this.globalSpeed * tm;
+        this.timer += (TIMER_SPEED+0.0005*this.speedState) * tm;
         if(this.timer >= 1.0) {
 
             this.timer -= 1.0;
             // Create a new bunny
             this.objm.createBunny();
+        }
+
+        if(this.speedState < SPEED_LIMITS.length) {
+            // Update speed
+            this.speedTimer += 1.0 * tm;
+            if(this.speedTimer > SPEED_LIMITS[this.speedState]) {
+
+                ++ this.speedState;
+                this.globalSpeed += 0.25;
+            }
+        }
+
+        // Update global speed, if "too small"
+        if(this.globalSpeed < 1.0) {
+
+            this.globalSpeed += GSPEED_INCREASE * tm;
+            if(this.globalSpeed > 1.0)
+                this.globalSpeed = 1.0;
+        }
+    }
+    else {
+
+        if(this.readyPhase == 0) {
+
+            this.readyPhase = this.objm.bunnies[0].dying ? 1 : 0;
+        }
+        else {
+
+            this.readyPhase = this.objm.bunnies[1].spawning ? 1 : 2;
         }
     }
 
@@ -136,6 +187,13 @@ Game.prototype.update = function(evMan, tm) {
 
         this.gameOver = true;
         this.paused = false;
+
+        // Check record
+        if(this.coins > this.record) {
+
+            this.record = this.coins;
+            window.localStorage.record = String(this.record);
+        }
     }
 
     // Update stage
@@ -176,5 +234,13 @@ Game.prototype.draw = function(g) {
     if(this.gameOver) {
 
         this.drawGameOver(g);
+    }
+
+    // Draw ready-go
+    if(this.readyPhase < 2) {
+
+        let str = this.readyPhase == 0 ? "READY?" : "GO!";
+        g.drawText(g.bitmaps.font, str, 
+            160/2, 144/2-4 -16, 0,0, true);
     }
 }
