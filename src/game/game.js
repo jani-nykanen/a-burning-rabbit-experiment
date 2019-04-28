@@ -61,6 +61,8 @@ Game.prototype.init = function(evMan, g) {
 // Reset
 Game.prototype.reset = function() {
 
+    const INTRO_TIME = 90;
+
     // Set defaults
     this.globalSpeed = 0.0;
     this.timer = 0.0;
@@ -84,7 +86,9 @@ Game.prototype.reset = function() {
     this.speedState = 0;
 
     // Ready-go stuff
-    this.readyPhase = 0;
+    this.readyPhase = -1;
+    // Info timer
+    this.infoTimer = INTRO_TIME;
 }
 
 
@@ -143,6 +147,12 @@ Game.prototype.update = function(evMan, tm) {
             return;
         }
 
+        // Update info timer
+        if(this.infoTimer > 0) {
+
+            this.infoTimer -= 1.0 * tm;
+        }
+
         // Update timer
         this.timer += TIMER_SPEED * this.globalSpeed * tm;
         if(this.timer >= 1.0) {
@@ -176,6 +186,10 @@ Game.prototype.update = function(evMan, tm) {
 
             this.readyPhase = this.objm.bunnies[0].dying ? 1 : 0;
         }
+        else if(this.readyPhase == -1) {
+            
+            this.readyPhase = 0;
+        }
         else {
 
             this.readyPhase = this.objm.bunnies[1].spawning ? 1 : 2;
@@ -207,6 +221,8 @@ Game.prototype.update = function(evMan, tm) {
 // Draw
 Game.prototype.draw = function(g) {
 
+    const INFO_Y = 16;
+
     // Reset camera
     g.setTranslation();
     // Clear to gray
@@ -237,10 +253,30 @@ Game.prototype.draw = function(g) {
     }
 
     // Draw ready-go
-    if(this.readyPhase < 2) {
+    if(this.readyPhase < 2 && this.readyPhase >= 0) {
 
         let str = this.readyPhase == 0 ? "READY?" : "GO!";
         g.drawText(g.bitmaps.font, str, 
             160/2, 144/2-4 -16, 0,0, true);
+    }
+
+    // Draw info
+    if(this.infoTimer > 0 || this.paused) {
+
+        let t = 1.0;
+        if(this.infoTimer < 30 && !this.paused)
+            t = this.infoTimer / 30;
+
+        if(!this.paused) {
+
+            g.fillRect((1-t)*(-32), INFO_Y, 32, 96, {r:0, g:0, b:0, a:0.33});
+            g.fillRect(160-32*t, INFO_Y, 32, 96, {r:0, g:0, b:0, a:0.33});
+
+            g.setGlobalAlpha(0.75);
+        }
+        
+        g.drawBitmapRegion(g.bitmaps.controls, 0, 0, 32, 96, (1-t)*(-32), INFO_Y);
+        g.drawBitmapRegion(g.bitmaps.controls, 32, 0, 32, 96, 160 - 32*t, INFO_Y);
+        g.setGlobalAlpha(1);
     }
 }

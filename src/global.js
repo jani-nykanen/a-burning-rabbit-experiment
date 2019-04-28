@@ -12,9 +12,7 @@ let Global = function() {
 // Initialize
 Global.prototype.init = function(evMan, g) {
 
-    // Transition using box
-    evMan.transition.activate(Fade.Out, 1.0, 
-        null, {r:0,g:0,b:0}, 16, Effect.Bars);
+    // ...
 }
 
 

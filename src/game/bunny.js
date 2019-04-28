@@ -182,7 +182,8 @@ Bunny.prototype.control = function(evMan, tm) {
 
     // Flapping
     this.flapping = s == State.Down &&
-        this.speed.y > 0.0;
+        this.speed.y > 0.0 &&
+        !this.rushing;
     if(this.flapping) {
 
         this.target.y = FLAP_GRAV;
@@ -193,6 +194,7 @@ Bunny.prototype.control = function(evMan, tm) {
     if(!this.rushing && delta.y > EPS && stick.y > EPS) {
 
         this.rushing = true;
+        this.target.y = GRAV_TARGET;
         this.target.y *= 1.5;
         this.speed.y = this.target.y;
         this.flapping = false;

@@ -24,6 +24,7 @@ let main = function() {
             life: "life.png",
             logo: "logo.png",
             intro: "intro.png",
+            controls: "controls.png",
         },
 
         // Documents
@@ -54,7 +55,8 @@ let main = function() {
 
     // Add scenes
     // Help: addScene(scene, makeActive=false, makeGlobal=false)
-    c.addScene(new Title(), true);
+    c.addScene(new ToggleAudio(), true);
+    c.addScene(new Title(), false);
     c.addScene(new Game(), false);
     c.addScene(new Global(), false, true);
 

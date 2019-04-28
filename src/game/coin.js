@@ -41,7 +41,7 @@ Coin.prototype.update = function(globalSpeed, tm) {
 
         this.pos.y = 128-12;
 
-        this.speed.y *= -0.75;
+        this.speed.y *= -0.80;
         if(this.speed.y > -EPS) {
 
             this.exist = false;
