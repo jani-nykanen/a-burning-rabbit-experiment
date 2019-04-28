@@ -113,6 +113,11 @@ let Bunny = function() {
 
     // Gold value
     this.goldValue = 0.0;
+
+    // Jump timer
+    this.jumpTimer = 0;
+    // Jump speed
+    this.jumpSpeed = 0;
 }
 
 
@@ -140,24 +145,28 @@ Bunny.prototype.createSelf = function(x, y) {
 Bunny.prototype.control = function(evMan, tm) {
     
     const GRAV_TARGET = 2.0;
-    const DJUMP_HEIGHT = -3.0;
+    const DJUMP_TIME= 5.0;
     const FLAP_GRAV = 0.5;
     const EPS = 0.5;
+    const DJUMP_SPEED = 2.0;
 
     let stick = evMan.vpad.stick;
     this.target.x = stick.x;
 
-    if(!this.rushing)
+    if(!this.rushing) {
+
         this.target.y = GRAV_TARGET;
+    }
 
     // Double jump
     let s = evMan.vpad.buttons.fire1.state;
-    if(s == State.Pressed) {
+    if(this.jumpTimer <= 0 && s == State.Pressed) {
 
         if(!this.djump) {
 
             this.djump = true;
-            this.speed.y = DJUMP_HEIGHT;
+            this.jumpTimer = DJUMP_TIME;
+            this.jumpSpeed = DJUMP_SPEED;
         }
     }
 
@@ -214,6 +223,7 @@ Bunny.prototype.move = function(evMan, tm) {
 
     const GRAVITY = 0.1;
     const ACC_H = 0.1;
+    const SLOW_DOWN = 0.5;
 
     // Update speed axes
     this.speed.x =
@@ -222,6 +232,14 @@ Bunny.prototype.move = function(evMan, tm) {
     this.speed.y =
         this.updateSpeed(this.speed.y, this.target.y, 
         GRAVITY, tm);
+
+    // Update jump timer
+    if(this.jumpTimer > 0) {
+
+        let s = evMan.vpad.buttons.fire1.state == State.Down;
+        this.jumpTimer  -= (s ? SLOW_DOWN : 1.0) * tm;
+        this.speed.y = -this.jumpSpeed;
+    }
 
     // Update position
     this.pos.x += this.speed.x * tm;
@@ -389,8 +407,11 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
         if(this.pos.x < 24)
             this.pos.x += 160;
 
+        // Reduce life & bunny count
         -- oman.bunnyCount;
-        -- oman.gameRef.lives;
+        if(oman.gameRef.lives > 0)
+            -- oman.gameRef.lives;
+
         if(oman.bunnyCount <= 0) {
             // Create a new bunny
             oman.createBunny();
@@ -462,8 +483,9 @@ Bunny.prototype.draw = function(g) {
 // Floor collision
 Bunny.prototype.floorCollision = function(x, y, w, tm) {
 
-    const BOUNCE_HEIGHT = -3.0;
+    const BOUNCE_TIME = 10;
     const RUSH_BONUS = 1.25;
+    const JUMP_SPEED = 2.0;
 
     const COL_OFF_TOP = -0.5;
     const COL_OFF_BOTTOM = 1.0;
@@ -481,9 +503,11 @@ Bunny.prototype.floorCollision = function(x, y, w, tm) {
        this.pos.y <= y+(COL_OFF_BOTTOM+this.speed.y)*tm) {
 
         this.pos.y = y;
-        this.speed.y = BOUNCE_HEIGHT;
+        this.jumpTimer = BOUNCE_TIME;
+        this.jumpSpeed = JUMP_SPEED;
         if(this.rushing)
-            this.speed.y *= RUSH_BONUS;
+            this.jumpSpeed *= RUSH_BONUS;
+
         this.djump = false;
 
         return true;
