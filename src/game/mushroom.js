@@ -292,6 +292,7 @@ Mushroom.prototype.bunnyCollision = function(b, evMan, oman, tm) {
             oman.createLife(this.pos.x, this.pos.y, 
                 LIFE_SPEED_X, LIFE_SPEED_Y);
             
+            evMan.audio.playSample(evMan.sounds.gold, 0.50);
         }
     }
 

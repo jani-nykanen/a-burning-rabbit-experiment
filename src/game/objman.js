@@ -24,7 +24,7 @@ let ObjectManager = function(gameRef) {
         this.bunnies[i].exist = false;
     }
     // Create a starting bunny
-    this.bunnies[0].createSelf(80, 0, true);
+    this.bunnies[0].createSelf(80, -4, true);
 
     this.coins = new Array(COIN_COUNT);
     for(let i = 0; i < this.coins.length; ++ i) {
@@ -181,7 +181,7 @@ ObjectManager.prototype.createCoins = function(x, y, count, uniformSpeed) {
         c = this.findFirst(this.coins);
         if(c == null) break;
 
-        height = uniformSpeed ? 0.67 : 1.0 + 0.25*Math.random();
+        height = uniformSpeed ? 0.67 : 1.25 + 0.125*Math.random();
         c.createSelf(x, y, 
             Math.cos(angle), 
             -Math.abs(Math.sin(angle)*2*height));

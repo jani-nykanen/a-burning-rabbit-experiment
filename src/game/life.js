@@ -117,6 +117,6 @@ Life.prototype.bunnyCollision = function(b, evMan, game) {
         if(!game.gameOver)
             ++ game.lives; 
         
-        evMan.audio.playSample(evMan.sounds.life, 0.50);
+        evMan.audio.playSample(evMan.sounds.life, 0.40);
     }
 }

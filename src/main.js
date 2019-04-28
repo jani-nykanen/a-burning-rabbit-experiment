@@ -45,6 +45,9 @@ let main = function() {
             spawn: "spawn.wav",
             ready: "ready.wav",
             go: "go.wav",
+            gold: "gold.wav",
+            theme: "theme.ogg",
+            title: "title.ogg",
         },
     }
 

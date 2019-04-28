@@ -287,7 +287,7 @@ Bunny.prototype.animate = function(evMan, tm, playFlap) {
         this.spr.animate(2, 0, 3, FLAP_SPEED, tm);
         if(playFlap && this.spr.frame == 1 && oldFrame == 0) {
 
-            evMan.audio.playSample(evMan.sounds.flap, 0.50);
+            evMan.audio.playSample(evMan.sounds.flap, 0.30);
         }
     }
     // Other
@@ -405,7 +405,7 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm, ignoreControls, 
     // Die when colliding floor
     if(this.pos.y >= FLOOR_Y) {
 
-        evMan.audio.playSample(evMan.sounds.die, 0.50);
+        evMan.audio.playSample(evMan.sounds.die, 0.40);
 
         // Create coins
         oman.createCoins(this.pos.x, this.pos.y,

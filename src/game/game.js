@@ -143,6 +143,15 @@ Game.prototype.update = function(evMan, tm) {
 
             evMan.audio.playSample(evMan.sounds.pause, 0.50);
             this.paused = !this.paused;
+
+            if(this.paused) {
+
+                evMan.audio.pauseMusic();
+            }
+            else {
+
+                evMan.audio.resumeMusic();
+            }
         }
 
         if(this.paused) {
@@ -189,13 +198,15 @@ Game.prototype.update = function(evMan, tm) {
             this.readyPhase = this.objm.bunnies[0].dying ? 1 : 0;
             if(this.readyPhase != 0) {
 
-                evMan.audio.playSample(evMan.sounds.go, 0.50);
+                evMan.audio.playSample(evMan.sounds.go, 0.40);
+
+                evMan.audio.fadeInMusic(evMan.sounds.theme, 0.50, 1000);
             }
         }
         else if(this.readyPhase == -1) {
             
             this.readyPhase = 0;
-            evMan.audio.playSample(evMan.sounds.ready, 0.50);
+            evMan.audio.playSample(evMan.sounds.ready, 0.40);
         }
         else {
 
@@ -208,6 +219,8 @@ Game.prototype.update = function(evMan, tm) {
 
         this.gameOver = true;
         this.paused = false;
+
+        evMan.audio.fadeOutMusic(evMan.sounds.theme, 0.0, 1000);
 
         // Check record
         if(this.coins > this.record) {
