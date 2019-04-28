@@ -92,6 +92,6 @@ Coin.prototype.bunnyCollision = function(b, evMan, game) {
         if(!game.gameOver)
             ++ game.coins; 
 
-        evMan.audio.playSample(evMan.sounds.coin, 0.50);
+        evMan.audio.playSample(evMan.sounds.coin, 0.40);
     }
 }

@@ -6,3 +6,4 @@ git add assets
 git add index.html
 git add README.md
 git add dev
+git add zip.sh

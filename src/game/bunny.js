@@ -533,7 +533,7 @@ Bunny.prototype.floorCollision = function(x, y, w, evMan, tm) {
 
         this.djump = false;
 
-        evMan.audio.playSample(evMan.sounds.bounce, 0.50);
+        evMan.audio.playSample(evMan.sounds.bounce, 0.40);
 
         return true;
     }
