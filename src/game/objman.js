@@ -76,7 +76,7 @@ ObjectManager.prototype.findFirst = function(arr) {
 
 
 // Create a mushroom
-ObjectManager.prototype.createMushroom = function() {
+ObjectManager.prototype.createMushroom = function(globalSpeed) {
 
     const MUSHROOM_ID_MAX = 9;
     const BASE_TIME = 32;
@@ -143,6 +143,9 @@ ObjectManager.prototype.createMushroom = function() {
         // Update wait count
         this.lifeWait = LIFE_WAIT_MIN + 
             ((Math.random()*(LIFE_WAIT_MAX-LIFE_WAIT_MIN))|0);
+
+        this.lifeWait *= globalSpeed;
+        this.lifeWait |= 0;
     }
 }
 
@@ -205,12 +208,12 @@ ObjectManager.prototype.createLife = function(x, y, sx, sy) {
 
 
 // Update
-ObjectManager.prototype.update = function(globalSpeed, evMan, cam, tm) {
+ObjectManager.prototype.update = function(globalSpeed, evMan, tm) {
 
     // Update mushroom timer
     if((this.mushroomTimer -= globalSpeed*tm) <= 0.0) {
 
-        this.createMushroom();
+        this.createMushroom(globalSpeed);
     }
 
     // Update mushrooms

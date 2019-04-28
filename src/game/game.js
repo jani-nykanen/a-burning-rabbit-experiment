@@ -120,7 +120,7 @@ Game.prototype.update = function(evMan, tm) {
                 this.reset();
             },
             null,
-            8);
+            4);
         }
 
         // Reduce global speed
@@ -144,7 +144,7 @@ Game.prototype.update = function(evMan, tm) {
         }
 
         // Update timer
-        this.timer += (TIMER_SPEED+0.0005*this.speedState) * tm;
+        this.timer += TIMER_SPEED * this.globalSpeed * tm;
         if(this.timer >= 1.0) {
 
             this.timer -= 1.0;
@@ -199,7 +199,7 @@ Game.prototype.update = function(evMan, tm) {
     // Update stage
     this.stage.update(this.globalSpeed, evMan, tm);
     // Update objects
-    this.objm.update(this.globalSpeed, evMan, this.cam, tm);
+    this.objm.update(this.globalSpeed, evMan, tm);
 
 }
 

@@ -22,6 +22,8 @@ let main = function() {
             bunny: "bunny.png",
             coin: "coin.png",
             life: "life.png",
+            logo: "logo.png",
+            intro: "intro.png",
         },
 
         // Documents
@@ -52,9 +54,9 @@ let main = function() {
 
     // Add scenes
     // Help: addScene(scene, makeActive=false, makeGlobal=false)
-    c.addScene(new Game(), true);
+    c.addScene(new Title(), true);
+    c.addScene(new Game(), false);
     c.addScene(new Global(), false, true);
-    // Add more scenes here
 
     // Run application
     c.run(framerate, assetContent, gamepadConfig);

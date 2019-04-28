@@ -138,6 +138,7 @@ Bunny.prototype.createSelf = function(x, y, disableControls) {
         this.spawning = false;
         this.goldValue = 0.5;
     }
+    this.jumpTimer = 0;
 
     for(let i = 0; i < this.dust.length; ++ i) {
 
