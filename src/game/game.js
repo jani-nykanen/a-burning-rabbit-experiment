@@ -146,11 +146,11 @@ Game.prototype.update = function(evMan, tm) {
 
             if(this.paused) {
 
-                evMan.audio.pauseMusic();
+                // evMan.audio.pauseMusic();
             }
             else {
 
-                evMan.audio.resumeMusic();
+               // evMan.audio.resumeMusic();
             }
         }
 
@@ -200,7 +200,7 @@ Game.prototype.update = function(evMan, tm) {
 
                 evMan.audio.playSample(evMan.sounds.go, 0.40);
 
-                evMan.audio.fadeInMusic(evMan.sounds.theme, 0.50, 1000);
+                //evMan.audio.fadeInMusic(evMan.sounds.theme, 0.50, 1000);
             }
         }
         else if(this.readyPhase == -1) {
@@ -220,7 +220,7 @@ Game.prototype.update = function(evMan, tm) {
         this.gameOver = true;
         this.paused = false;
 
-        evMan.audio.fadeOutMusic(evMan.sounds.theme, 0.0, 1000);
+       // evMan.audio.fadeOutMusic(evMan.sounds.theme, 0.0, 1000);
 
         // Check record
         if(this.coins > this.record) {

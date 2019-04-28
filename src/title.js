@@ -39,7 +39,7 @@ Title.prototype.update = function(evMan, tm) {
 
             evMan.transition.activate(Fade.In, 2.0, () => {
                 this.introPlayed =  true;
-                evMan.audio.fadeInMusic(evMan.sounds.title, 0.5, 1000);
+                // evMan.audio.fadeInMusic(evMan.sounds.title, 0.5, 1000);
             }, {r:109, g:182, b: 255}, 4);
         }
         return;
@@ -54,13 +54,13 @@ Title.prototype.update = function(evMan, tm) {
        evMan.vpad.buttons.fire1.state == State.Pressed ) {
 
         evMan.audio.playSample(evMan.sounds.start, 0.50);
-        evMan.audio.fadeOutMusic(evMan.sounds.title, 0.0, 1000);
+        // evMan.audio.fadeOutMusic(evMan.sounds.title, 0.0, 1000);
 
         evMan.transition.activate(Fade.In, 1.0, () => {
             evMan.changeScene("game");
             evMan.transition.effect = Effect.Fading;
             evMan.transition.division = 4;  
-            evMan.audio.stopMusic();
+            // evMan.audio.stopMusic();
         }, null, 16, Effect.Bars);
     }
 }
