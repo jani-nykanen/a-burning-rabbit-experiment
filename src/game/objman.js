@@ -223,7 +223,7 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, tm) {
         // Bunny collision
         for(let j = 0; j < this.bunnies.length; ++ j) {
 
-            this.mushrooms[i].bunnyCollision(this.bunnies[j], this, tm);
+            this.mushrooms[i].bunnyCollision(this.bunnies[j], evMan, this, tm);
         }
     }
 
@@ -252,9 +252,16 @@ ObjectManager.prototype.update = function(globalSpeed, evMan, tm) {
 
 
     // Update bunnies
+    let flapping = false;
     for(let i = 0; i < this.bunnies.length; ++ i) {
 
-        this.bunnies[i].update(globalSpeed, evMan, this, tm);
+        this.bunnies[i].update(globalSpeed, evMan, this, tm,
+             this.gameRef.gameOver, flapping);
+
+
+        if(this.bunnies[i].exist && !this.bunnies[i].dying && 
+            this.bunnies[i].flapping)
+            flapping = true;
     }
     
 }

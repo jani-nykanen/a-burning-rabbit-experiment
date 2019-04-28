@@ -50,6 +50,9 @@ ToggleAudio.prototype.update = function(evMan, tm) {
             
         // Toggle audio
         evMan.audio.toggle(this.cpos == 0);
+
+        // Play sample
+        evMan.audio.playSample(evMan.sounds.start, 0.50);
     }
 
     // Update cursor

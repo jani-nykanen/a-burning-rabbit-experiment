@@ -113,6 +113,10 @@ Life.prototype.bunnyCollision = function(b, evMan, game) {
        b.pos.y-b.height < this.pos.y) {
 
         this.exist = false;
-        ++ game.lives; 
+
+        if(!game.gameOver)
+            ++ game.lives; 
+        
+        evMan.audio.playSample(evMan.sounds.life, 0.50);
     }
 }

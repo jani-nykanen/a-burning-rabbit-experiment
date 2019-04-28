@@ -33,7 +33,19 @@ let main = function() {
 
         // Samples
         soundPath: "assets/audio",
-        sounds: { },
+        sounds: { 
+            coin: "coin.wav",
+            jump: "jump.wav",
+            die: "die.wav",
+            bounce: "bounce.wav",
+            life: "life.wav",
+            start: "start.wav",
+            pause: "pause.wav",
+            flap: "flap.wav",
+            spawn: "spawn.wav",
+            ready: "ready.wav",
+            go: "go.wav",
+        },
     }
 
     // Gamepad config

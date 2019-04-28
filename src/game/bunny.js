@@ -139,6 +139,7 @@ Bunny.prototype.createSelf = function(x, y, disableControls) {
         this.goldValue = 0.5;
     }
     this.jumpTimer = 0;
+    this.djump = false;
 
     for(let i = 0; i < this.dust.length; ++ i) {
 
@@ -149,7 +150,7 @@ Bunny.prototype.createSelf = function(x, y, disableControls) {
 
 
 // Control
-Bunny.prototype.control = function(evMan, tm) {
+Bunny.prototype.control = function(evMan, tm, ignoreControls) {
     
     const GRAV_TARGET = 2.0;
     const DJUMP_TIME= 5.0;
@@ -163,7 +164,7 @@ Bunny.prototype.control = function(evMan, tm) {
         this.target.y = GRAV_TARGET;
     }
 
-    if(this.disableControls)
+    if(this.disableControls || ignoreControls)
         return;
 
     this.target.x = stick.x;
@@ -177,6 +178,8 @@ Bunny.prototype.control = function(evMan, tm) {
             this.djump = true;
             this.jumpTimer = DJUMP_TIME;
             this.jumpSpeed = DJUMP_SPEED;
+
+            evMan.audio.playSample(evMan.sounds.jump, 0.50);
         }
     }
 
@@ -266,7 +269,7 @@ Bunny.prototype.move = function(evMan, tm) {
 
 
 // Animate
-Bunny.prototype.animate = function(evMan, tm) {
+Bunny.prototype.animate = function(evMan, tm, playFlap) {
 
     const JUMP_MOD = 0.25;
     const ROLL_SPEED = 4;
@@ -280,7 +283,12 @@ Bunny.prototype.animate = function(evMan, tm) {
     // Flap
     else if(this.flapping) {
 
+        let oldFrame = this.spr.frame;
         this.spr.animate(2, 0, 3, FLAP_SPEED, tm);
+        if(playFlap && this.spr.frame == 1 && oldFrame == 0) {
+
+            evMan.audio.playSample(evMan.sounds.flap, 0.50);
+        }
     }
     // Other
     else {
@@ -356,7 +364,7 @@ Bunny.prototype.spawn = function(tm) {
 
 
 // Update
-Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
+Bunny.prototype.update = function(globalSpeed, evMan, oman, tm, ignoreControls, noFlap) {
 
     const FLOOR_Y = 128-12;
     const GOLD_SPEED = 0.00125;
@@ -390,15 +398,16 @@ Bunny.prototype.update = function(globalSpeed, evMan, oman, tm) {
             this.goldValue = 1.0;
     }
 
-    this.control(evMan, tm);
+    this.control(evMan, tm, ignoreControls);
     this.move(evMan, tm);
-    this.animate(evMan, tm);
+    this.animate(evMan, tm, !noFlap);
 
     // Die when colliding floor
     if(this.pos.y >= FLOOR_Y) {
 
+        evMan.audio.playSample(evMan.sounds.die, 0.50);
+
         // Create coins
-        
         oman.createCoins(this.pos.x, this.pos.y,
             this.disableControls ? 3 : (((MAX_COIN*this.goldValue) | 0)  +1),
             this.disableControls
@@ -495,7 +504,7 @@ Bunny.prototype.draw = function(g) {
 
 
 // Floor collision
-Bunny.prototype.floorCollision = function(x, y, w, tm) {
+Bunny.prototype.floorCollision = function(x, y, w, evMan, tm) {
 
     const BOUNCE_TIME = 10;
     const RUSH_BONUS = 1.25;
@@ -523,6 +532,8 @@ Bunny.prototype.floorCollision = function(x, y, w, tm) {
             this.jumpSpeed *= RUSH_BONUS;
 
         this.djump = false;
+
+        evMan.audio.playSample(evMan.sounds.bounce, 0.50);
 
         return true;
     }

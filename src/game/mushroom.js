@@ -243,7 +243,7 @@ Mushroom.prototype.draw = function(g) {
 
 
 // Bunny collision
-Mushroom.prototype.bunnyCollision = function(b, oman, tm) {
+Mushroom.prototype.bunnyCollision = function(b, evMan, oman, tm) {
 
     const COIN_COUNT = 5;
     const LIFE_SPEED_X = 1.0;
@@ -271,7 +271,7 @@ Mushroom.prototype.bunnyCollision = function(b, oman, tm) {
         break;
     };
 
-    if(b.floorCollision(x, y, w, tm)) {
+    if(b.floorCollision(x, y, w, evMan, tm)) {
 
         this.bounceTimer = MUSHROOM_BOUNCE_WAIT;
         if(this.id == 1 || this.id == 4 || this.id == 6 || this.id == 9) {

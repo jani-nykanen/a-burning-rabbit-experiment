@@ -52,6 +52,8 @@ Title.prototype.update = function(evMan, tm) {
     if(evMan.vpad.buttons.start.state == State.Pressed ||
        evMan.vpad.buttons.fire1.state == State.Pressed ) {
 
+        evMan.audio.playSample(evMan.sounds.start, 0.50);
+
         evMan.transition.activate(Fade.In, 1.0, () => {
             evMan.changeScene("game");
             evMan.transition.effect = Effect.Fading;

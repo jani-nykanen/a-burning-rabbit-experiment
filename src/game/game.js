@@ -118,6 +118,7 @@ Game.prototype.update = function(evMan, tm) {
 
         if(enterPressed) {
 
+            evMan.audio.playSample(evMan.sounds.start, 0.50);
             evMan.transition.activate(Fade.In, 2.0, () => {
 
                 this.gameOver = false;
@@ -140,6 +141,7 @@ Game.prototype.update = function(evMan, tm) {
         // Pause/unpause
         if(enterPressed) {
 
+            evMan.audio.playSample(evMan.sounds.pause, 0.50);
             this.paused = !this.paused;
         }
 
@@ -185,10 +187,15 @@ Game.prototype.update = function(evMan, tm) {
         if(this.readyPhase == 0) {
 
             this.readyPhase = this.objm.bunnies[0].dying ? 1 : 0;
+            if(this.readyPhase != 0) {
+
+                evMan.audio.playSample(evMan.sounds.go, 0.50);
+            }
         }
         else if(this.readyPhase == -1) {
             
             this.readyPhase = 0;
+            evMan.audio.playSample(evMan.sounds.ready, 0.50);
         }
         else {
 
